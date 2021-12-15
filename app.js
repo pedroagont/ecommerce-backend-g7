@@ -2,6 +2,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const { errors } = require('celebrate');
 const app = express();
 const routes = require('./routes');
 require('./db');
@@ -19,5 +20,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1', routes);
+
+app.use(errors());
 
 module.exports = app;
