@@ -1,32 +1,68 @@
 const { AuthModel } = require('../models');
 
-const register = (req, res) => {
+const register = async (req, res) => {
   // destructurar email y password
-  // buscar email en base de datos para validar que existe
-  // // si ya existe, retornar y responder con mensaje de error
-  // ya validado el email, crear usuario y responder
-  const { body } = req;
-  return AuthModel.create(body)
-    .then(newUser => {
-      res.status(200).send({ message: 'Usuario creado!', newUser });
-    })
-    .catch(err => {
-      res
+  const { email, password } = req.body;
+  // si no existen, retornar y responder con mensaje de error
+  if (!email || !password) {
+    return res.status(400).send({ message: 'Ingresa email y password' });
+  }
+
+  try {
+    // buscar email en base de datos para validar que existe
+    const emailExists = await AuthModel.findOne({ email });
+    // // si ya existe, retornar y responder con mensaje de error
+    if (emailExists) {
+      return res
         .status(400)
-        .send({ message: 'Error creando usuario!', error: err.message });
-    });
+        .send({ message: 'Ya existe un usario con ese correo' });
+    }
+
+    // ya validado el email, crear usuario y responder
+    const body = { email, password };
+    const newUser = await AuthModel.create(body);
+    return res.status(201).send({ message: 'Usuario creado!', newUser });
+  } catch (err) {
+    return res
+      .status(400)
+      .send({ message: 'Error creando usuario!', error: err.message });
+  }
 };
 
-const login = (req, res) => {
+const login = async (req, res) => {
   // destructurar email y password
-  // // si no existen, retornar y responder con mensaje de error
-  // buscar email en base de datos para validar que existe
-  // // si no existe, retornar y responder con mensaje de error
-  // ya validado el email, comparar contraseñas
-  // // si no son iguales, retornar y responder con mensaje de error
-  // ya validado el password, crear token de autenticación
-  // agregar token a petición y responder
-  return res.send({ message: 'Hola desde login!' });
+  const { email, password } = req.body;
+  // si no existen, retornar y responder con mensaje de error
+  if (!email || !password) {
+    return res.status(400).send({ message: 'Ingresa email y password' });
+  }
+
+  try {
+    // buscar email en base de datos para validar que existe
+    const user = await AuthModel.findOne({ email });
+    // // si no existe, retornar y responder con mensaje de error
+    if (!user) {
+      return res
+        .status(400)
+        .send({ message: 'No existe un usario con ese correo' });
+    }
+
+    // ya validado el email, comparar contraseñas
+    const validPassword = await user.comparePassword(password);
+    // // si no son iguales, retornar y responder con mensaje de error
+    if (!validPassword) {
+      return res.status(400).send({ message: 'Passwords no coinciden' });
+    }
+
+    // ya validado el password, crear token de autenticación
+    // agregar token a petición y responder
+
+    return res.send({ message: 'Hola desde login!' });
+  } catch (e) {
+    return res
+      .status(400)
+      .send({ message: 'Error al hacer login!', error: err.message });
+  }
 };
 
 const logout = (req, res) => {
