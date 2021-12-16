@@ -28,7 +28,7 @@ const findAllProducts = (req, res) => {
 const findOneProduct = (req, res) => {
   const { id } = req.params;
 
-  return ProductsModel.findById(id)
+  return ProductsModel.findOne({ _id: id, isActive: true })
     .then(product => {
       res.status(200).send({ message: 'Producto encontrado!', product });
     })
