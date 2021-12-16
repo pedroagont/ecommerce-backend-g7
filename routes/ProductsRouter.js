@@ -2,10 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { ProductsController } = require('../controllers');
 const { ProductsValidator } = require('../validators');
+const { verifyToken } = require('../middlewares');
 
 // CRUD Productos
 // Create - POST
-router.post('/', ProductsValidator, ProductsController.createProduct);
+router.post(
+  '/',
+  verifyToken,
+  ProductsValidator,
+  ProductsController.createProduct
+);
 
 // Read All - GET
 router.get('/', ProductsController.findAllProducts);
@@ -14,12 +20,12 @@ router.get('/', ProductsController.findAllProducts);
 router.get('/:id', ProductsController.findOneProduct);
 
 // Update - PUT
-router.put('/:id', ProductsController.updateProduct);
+router.put('/:id', verifyToken, ProductsController.updateProduct);
 
 // Delete - DELETE
-router.delete('/:id', ProductsController.deleteProduct);
+router.delete('/:id', verifyToken, ProductsController.deleteProduct);
 
 // Destroy - DELETE
-router.delete('/:id/destroy', ProductsController.destroyProduct);
+router.delete('/:id/destroy', verifyToken, ProductsController.destroyProduct);
 
 module.exports = router;
