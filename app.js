@@ -2,7 +2,6 @@
 const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const { errors } = require('celebrate');
 const app = express();
 const routes = require('./routes');
 const middlewares = require('./middlewares');
@@ -24,7 +23,5 @@ app.use('/api/v1', routes);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
-
-app.use(errors());
 
 module.exports = app;
