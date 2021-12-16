@@ -63,7 +63,7 @@ const login = async (req, res) => {
     };
 
     // Generamos un token con el payload y nuestro secreto
-    const token = jwt.sign(payload, SECRET);
+    const token = jwt.sign(payload, SECRET, { expiresIn: '10m' });
 
     return res.send({ message: 'Hola desde login!', token });
   } catch (err) {
@@ -73,9 +73,4 @@ const login = async (req, res) => {
   }
 };
 
-const logout = (req, res) => {
-  // eliminar token de petición
-  return res.send({ message: 'Hola desde logout!' });
-};
-
-module.exports = { register, login, logout };
+module.exports = { register, login };
