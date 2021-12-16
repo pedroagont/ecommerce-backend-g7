@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const { errors } = require('celebrate');
 const app = express();
 const routes = require('./routes');
+const middlewares = require('./middlewares');
 require('./db');
 
 // SERVER SETTINGS + MIDDLEWARES
@@ -20,6 +21,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1', routes);
+
+app.use(middlewares.notFound);
+app.use(middlewares.errorHandler);
 
 app.use(errors());
 
